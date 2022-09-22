@@ -23,6 +23,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     bytes32 public keyHash;
     address payable[] public players;
     event RequestedRandomness(bytes32 requestId);
+    address public recentWinner;
 
     constructor(
         address _ethUsdPriceFeed,
@@ -87,6 +88,7 @@ contract Lottery is VRFConsumerBase, Ownable {
         require(randomness > 0, "Random number not found!");
         uint256 index = randomness % players.length;
         players[index].transfer(address(this).balance);
+        recentWinner = players[index];
         players = new address payable[](0);
         lotteryState = LOTTERY_STATE.CLOSED;
         randomness = randomness;
