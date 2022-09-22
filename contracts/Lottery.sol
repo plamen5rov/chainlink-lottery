@@ -27,16 +27,13 @@ contract Lottery is VRFConsumerBase, Ownable {
         address _ethUsdPriceFeed,
         address _vrfCoordinator,
         address _link,
-        bytes32 _keyHash,
-        VRFConsumerBase(_vrfCoordinator, _link)
-    ) public {
+        bytes32 _keyHash
+    ) public VRFConsumerBase(_vrfCoordinator, _link) {
         ethUsdPriceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
         usdEntryFee = 50;
         fee = 10000000000000000; // 0.1 LINK
         keyHash = _keyHash;
         lotteryState = LOTTERY_STATE.CLOSED;
-
-        
     }
 
     function enter() public payable {
@@ -81,8 +78,15 @@ contract Lottery is VRFConsumerBase, Ownable {
             lotteryState == LOTTERY_STATE.CALCULATING_WINNER,
             "Lottery not closed for new entries!"
         );
-        bytes32 requestId = requestRandomness(keyHash, fee, userProvidedSeed);
+        bytes32 requestId = requestRandomness(keyHash, fee);
     }
 
-    function fulfilRandomness() {}
+    function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
+        require(randomness > 0, "Random number not found!");
+        uint256 index = randomness % players.length;
+        players[index].transfer(address(this).balance);
+        players = new address payable[](0);
+        lotteryState = LOTTERY_STATE.CLOSED;
+        randomness = randomness;
+    }
 }
