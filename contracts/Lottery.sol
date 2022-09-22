@@ -6,16 +6,28 @@ import "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
 
 contract Lottery {
     using SafeMathChainlink for uint256;
+
+    enum LOTTERY_STATE {
+        OPEN,
+        CLOSED,
+        CALCULATING_WINNER
+    }
+    LOTTERY_STATE public lotteryState;
+
     AggregatorV3Interface internal ethUsdPriceFeed;
     uint256 usdEntryFee;
+    address payable[] public players;
 
     constructor(address _ethUsdPriceFeed) public {
         ethUsdPriceFeed = AggregatorV3Interface(_ethUsdPriceFeed);
         usdEntryFee = 50;
+        lotteryState = LOTTERY_STATE.CLOSED;
     }
 
     function enter() public payable {
         require(msg.value >= getEntranceFee(), "Not enough ETH to enter!");
+        require(lotteryState == LOTTERY_STATE.OPEN);
+        players.push(msg.sender);
     }
 
     function getEntranceFee() public view returns (uint256) {
@@ -29,14 +41,11 @@ contract Lottery {
         (
             ,
             /*uint80 roundID*/
-            int256 price,
+            int256 price, /*uint256 startedAt*/ /*uint256 timeStamp*/ /*uint80 answeredInRound*/
             ,
             ,
 
-        ) = /*uint256 startedAt*/
-            /*uint256 timeStamp*/
-            /*uint80 answeredInRound*/
-            ethUsdPriceFeed.latestRoundData();
+        ) = ethUsdPriceFeed.latestRoundData();
         return uint256(price);
     }
 
