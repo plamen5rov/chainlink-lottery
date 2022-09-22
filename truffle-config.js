@@ -25,7 +25,8 @@ const privateKeys = [process.env.PRIVATE_KEY]
 // These are the keys auto-generated from running `ganache -d`
 const ganachePrivateKeys = ["0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"]
 const GOERLI_RPC_URL =
-    process.env.GOERLI_RPC_URL || "https://eth-goerli.alchemyapi.io/v2/your-api-key"
+    process.env.GOERLI_RPC_URL ||
+    "https://eth-goerli.g.alchemy.com/v2/mJ047NmCK33bvYVA6G1MuarDylo_ARL9"
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY || ""
 //
 // const fs = require('fs');
