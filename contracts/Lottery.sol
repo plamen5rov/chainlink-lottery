@@ -3,8 +3,9 @@ pragma solidity ^0.6.6;
 
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 import "@chainlink/contracts/src/v0.6/vendor/SafeMathChainlink.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Lottery {
+contract Lottery is Ownable {
     using SafeMathChainlink for uint256;
 
     enum LOTTERY_STATE {
@@ -15,7 +16,8 @@ contract Lottery {
     LOTTERY_STATE public lotteryState;
 
     AggregatorV3Interface internal ethUsdPriceFeed;
-    uint256 usdEntryFee;
+    uint256 public usdEntryFee;
+    uint256 public randomness;
     address payable[] public players;
 
     constructor(address _ethUsdPriceFeed) public {
@@ -49,7 +51,11 @@ contract Lottery {
         return uint256(price);
     }
 
-    // function startLottery() public {}
+    function startLottery() public onlyOwner {
+        require(lotteryState == LOTTERY_STATE.CLOSED, "Lottery already started!");
+        lotteryState == LOTTERY_STATE.OPEN;
+        randomness = 0;
+    }
 
     // function endLottery() public {}
 
