@@ -22,6 +22,7 @@ contract Lottery is VRFConsumerBase, Ownable {
     uint256 public fee;
     bytes32 public keyHash;
     address payable[] public players;
+    event RequestedRandomness(bytes32 requestId);
 
     constructor(
         address _ethUsdPriceFeed,
@@ -79,6 +80,7 @@ contract Lottery is VRFConsumerBase, Ownable {
             "Lottery not closed for new entries!"
         );
         bytes32 requestId = requestRandomness(keyHash, fee);
+        emit RequestedRandomness(requestId);
     }
 
     function fulfillRandomness(bytes32 requestId, uint256 randomness) internal override {
